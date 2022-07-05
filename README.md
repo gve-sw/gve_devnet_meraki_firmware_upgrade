@@ -23,7 +23,7 @@ Once Python 3 is installed in your environment, you can activate the virtual env
 
 3. Clone this repository
 
-        $ git clone https://wwwin-github.cisco.com/gve/gve_devnet_meraki_firmware_upgrade.git
+        $ git clone https://github.com/gve-sw/gve_devnet_meraki_firmware_upgrade.git
 
 4. Access the folder `gve_devnet_meraki_firmware_upgrade`
 
