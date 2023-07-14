@@ -1,0 +1,187 @@
+<!-- Template page: offers three sections to visualize a 3 steps workflow.-->
+
+{% extends "masterPage.html" %}
+
+{% block content %}
+<div class="row">
+        
+        <!-- Left Rail -->
+        <div class="col-xl-5 col-md-4">
+            <div class="section" >
+                <div class="panel panel--loose panel--raised base-margin-bottom">
+                    <h6>Step 1: Choose Networks</h6>
+                    <hr>
+
+                    <div style="text-align: left;">
+                        <input id="upload" value="" type="file" hidden/>
+                        <span onclick="importButton();" data-balloon="Import CSV as downloaded from Meraki dashboard" data-balloon-pos="up"><button class="btn btn--primary" href="#" id="upload_link">Import network selection from CSV</button></span>
+                        <button class="btn btn--dark" href="#" style="margin-left:10px" onclick="selectOutdated();">Select all outdated networks</button></span>
+                    </div>
+                            <!--Network Select-->
+                            <form action="/index" method="POST"> 
+                                
+                                    {% for org in orgs %}
+                                    <h6 style="margin-top: 40px;">Organization: {{org.name}}</h6>
+                                    <h6 style="font-style: italic;float: right;color:grey">Templates</h6>
+                                    <table id="networks" class="table table--lined table--selectable" style="margin-top: 20px;" aria-label="Selectable rows table example">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Template name</th>
+                                                <th>Number of Networks</th>
+                                                <th>Switch version</th>
+                                                <th>Wireless version</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for t in org.templates %}
+                                            <tr {% if t.switchbeta or t.wirelessstable %} style="background-color: #FFB7B7;" name="outdated" {% endif %}>
+                                                <td>
+                                                    <label class="checkbox">
+                                                        <input type="checkbox" name="network" {% if t.checked %} checked {% endif %} value={{t.id}}>
+                                                        <span class="checkbox__input"></span>
+                                                    </label>
+                                                </td>
+                                                <td>{{t.name}}</td>
+                                                <td>{{t.networks|length}}</td>
+                                                <td>{{t.switch}}</td>
+                                                <td>{{t.wireless}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                </table>
+                                <h6 style="font-style: italic;float: right;color:grey;margin-top: 20px;">Networks</h6>
+                                    <table id="networks" class="table table--lined table--selectable" aria-label="Selectable rows table example">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Network name</th>
+                                                    <th>Switch version</th>
+                                                    <th>Wireless version</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for n in org.networks %}
+                                                <tr {% if n.switchbeta or n.wirelessstable %} style="background-color: #FFB7B7;" name="outdated" {% endif %}>
+                                                    <td>
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="network" {% if n.checked %} checked {% endif %} value={{n.id}}>
+                                                            <span class="checkbox__input"></span>
+                                                        </label>
+                                                    </td>
+                                                    <td>{{n.name}}</td>
+                                                    <td>{{n.switch}}</td>
+                                                    <td>{{n.wireless}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                    </table>
+                                    {% endfor %}
+                                    <div style="height: 50px;">
+                                        <button id="submit-button" style="float: right;margin-top: 20px;" class="btn btn--primary" action="submit">Submit</button>
+                                    </div>
+                                    
+                                </form> 
+                </div>
+            </div>
+        </div>
+    
+
+        <!-- Middle Rail -->
+        <div class="col-xl-4 col-md-4">
+            <div class="section" >
+                <div class="panel panel--loose panel--raised base-margin-bottom">
+                    <h2 class="subtitle">Step 2: Choose Firmware versions</h2><hr>
+
+                    <div style="text-align:right;">
+                        <span style="color: #4d8433;font-style: italic;">Note: You are able to select only one firmware version per device type</span>
+                    </div>
+
+                    {% if n_alert %}
+                    <div style="margin-top: 20px;" class="alert alert--danger" role="alert">
+                        <div class="alert__icon icon-error-outline"></div>
+                        <div class="alert__message">{{not_working_message}} Click <a href="https://community.meraki.com/t5/Developers-APIs/Check-Update-firmware-via-API/m-p/136589" target="_blank">here</a> for guidance.</div>
+                    </div>
+                    {% endif %}
+                    
+                    <!--Network Select-->
+                    <form action="/schedule" method="POST"> 
+                                
+                        {% for device in firmware %}
+                        <h6 style="margin-top: 20px;">Firmware version for: {{device}}</h6>
+                        <table id="networks" class="table table--lined" aria-label="Selectable rows table example">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Version name</th>
+                                        <th>Short name</th>
+                                        <th>Release type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for v in firmware[device] %}
+                                    <tr>
+                                        <td>
+                                            <label class="checkbox">
+                                                <input onclick="selectVersion(this)" name="checkbox-version-{{device}}" type="checkbox" name="network" value="{{device}}.{{v.id}}">
+                                                <span class="checkbox__input"></span>
+                                            </label>
+                                        </td>
+                                        <td>{{v.firmware}}</td>
+                                        <td>{{v.shortName}}</td>
+                                        <td>{{v.releaseType}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endfor %}
+                                                                            
+                            
+                </div>
+            </div>
+        </div>
+
+    <!-- Right Rail -->
+    <div class="col-xl-3 col-md-4">
+        <div class="section" >
+            <div class="panel panel--loose panel--raised base-margin-bottom">
+                <h6>Step 3: Schedule upgrades</h6>
+                <hr>
+
+                <div class="form-group base-margin-bottom">
+                    <div class="form-group__text">
+                        <input name="your-date" type="date" required="">
+                        <label for="input-type-date">Date</label>
+                    </div>
+                    <div class="form-group__text" style="margin-top: 20px;">
+                        <input name="your-time" type="time" required="">
+                        <label for="input-type-time">Time</label>
+                    </div>
+                </div>
+
+                <div style="text-align: left;margin-top: 20px;">
+                    <button id="submit_link" class="btn btn--primary" action="submit" onclick="submitButton();"">Click here to schedule upgrades</button>
+                </div>
+
+                {% if alert %}
+                <div style="margin-top: 20px;" class="alert alert--danger" role="alert">
+                    <div class="alert__icon icon-error-outline"></div>
+                    <div class="alert__message">{{f_message}}</div>
+                </div>
+                {% endif %}
+                {% if success %}
+                <div style="margin-top: 20px;" class="alert alert--success" role="alert">
+                    <div class="alert__icon icon-check-outline"></div>
+                    <div class="alert__message">{{s_message}}</div>
+                </div>
+                {% endif %}
+                    
+                </form>
+                <!-- CUSTOMIZATION END-->
+
+               
+            </div>
+        </div>
+    </div>
+</div>
+{%  endblock %}

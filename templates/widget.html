@@ -1,0 +1,30 @@
+{#{% extends "masterPage.html" %}#}
+{##}
+{##}
+{#{% block content %}#}
+{##}
+
+
+<link rel="stylesheet" href="https://code.s4d.io/widget-space/production/main.css">
+
+<script src="https://code.s4d.io/widget-space/production/bundle.js"></script>
+
+
+<p>Only Meetings</p>
+<div id="my-ciscospark-widget" />
+<script>
+  var widgetEl = document.getElementById('my-ciscospark-widget');
+  // Init a new widget
+  ciscospark.widget(widgetEl).spaceWidget({
+    accessToken: '{{ accessToken }}',
+    destinationId: '',
+    destinationType: 'email',
+    spaceActivities: {"files":false,"meet":true,"message":false,"people":false},
+    initialActivity: 'meet',
+    secondaryActivitiesFullWidth: false
+  });
+</script>
+
+{##}
+{##}
+{#{%  endblock %}#}

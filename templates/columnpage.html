@@ -1,0 +1,255 @@
+<!-- Template page: offers three sections to visualize a 3 steps workflow.-->
+
+    {% extends "masterPage.html" %}
+
+    {% block content %}
+    <div class="row">
+            
+            <!-- Left Rail -->
+            <div class="col-xl-3 col-md-4">
+                <div class="section" >
+                    <div class="panel panel--loose panel--raised base-margin-bottom">
+                        <h2 class="subtitle">Step 1: Choose Context <!--CUSTOMIZE: Add headline of second step here--></h2>
+                            <div class="section"> 
+
+                                <!--CUSTOMIZE: Change content, if no network selection or further fields are required -->
+                                <!--PASS INFO: dropdown_content = json string that includes all organization and networks of a user (format: see dropdown_content variable in app.py - columnpage())-->
+                                    <!--Orga fields-->
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text select">
+                                            <select name="organizations_select" id='organizations_select' required>
+                                                <option disabled selected hidden value="0">Please choose...</option>
+                                                {% for orga in dropdown_content %}<option value="{{orga.orgaid}}" {% if selected_elements.organization == orga.orgaid %} selected {% endif %}>{{orga.organame}} (ID:{{orga.orgaid}})</option>{% endfor %}
+                                            </select>
+                                            <label for="organizations_select">Organization*</label>
+                                        </div>
+                                    </div>
+
+                                    <!--Network fields-->
+                                {% for orga in dropdown_content %}
+                                    <div id="{{orga.orgaid}}" class="network-select" {% if selected_elements.organization != orga.orgaid %} hidden {% endif %}>
+                                        <div class="form-group base-margin-bottom">
+                                            <div class="form-group__text select">
+                                                <select name="network" class='networks'>
+                                                    <option disabled selected hidden value="0">Please choose...</option>
+                                                    {% for network in orga['networks'] %}
+                                                        <option value="{{network['networkid']}}" {% if selected_elements.network_id == network['networkid'] %} selected {% endif %}>{{network['networkname']}} (ID:{{network['networkid']}})</option>                                                      
+                                                    {% endfor %}
+                                                </select>
+                                                <label for="network">Network*</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                <!-- CUSTOMIZATION END -->
+
+                            <span class="required-label pull-right">* required fields</span>
+                            </div> 
+                    </div>
+                </div>
+            </div>
+        
+    
+            <!-- Middle Rail -->
+            <div class="col-xl-6 col-md-4">
+                <div class="section" >
+                    <div class="panel panel--loose panel--raised base-margin-bottom">
+                        <h2 class="subtitle">Step 2: Choose Elements<!--CUSTOMIZE: Add headline of second step here--></h2>
+                        
+                        <!--CUSTOMIZE: Change content as needed-->
+                        <div class="section">
+                            <div class="responsive-table">
+                                <table class="table table--lined table--selectable table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </th>
+                                            <th class="sortable">Device <span class="sort-indicator icon-dropdown"></span></th>
+                                            <th class="text-center">Advisories</th>
+                                            <th class="text-center hidden-xs-down">Coverage</th>
+                                            <th class="hidden-md-down">Software Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <span class="icon-router-outline icon-size-20 half-margin-right text-light"></span>
+                                                <span>border_cp_sda.local</span>
+                                            </td>
+                                            <td class="text-center"><span class="badge badge--danger">7</span></td>
+                                            <td class="text-center hidden-xs-down"><span class="icon-check text-success"></span></td>
+                                            <td class="hidden-md-down">IOS XE</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <span class="icon-router-outline icon-size-20 half-margin-right text-light"></span>
+                                                <span>WAN_EDGE3</span>
+                                            </td>
+                                            <td class="text-center"><span class="badge badge--warning">1</span></td>
+                                            <td class="text-center hidden-xs-down"><span class="icon-check text-success"></span></td>
+                                            <td class="hidden-md-down">IOS XE</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <span class="icon-switch-outline icon-size-20 half-margin-right text-light"></span>
+                                                <span>BLD2-FLR1-DST1</span>
+                                            </td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center hidden-xs-down"></td>
+                                            <td class="hidden-md-down">IOS XE</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <span class="icon-switch-outline icon-size-20 half-margin-right text-light"></span>
+                                                <span>SJC06-C9500-01</span>
+                                            </td>
+                                            <td class="text-center"><span class="badge badge--warning">2</span></td>
+                                            <td class="text-center hidden-xs-down"><span class="icon-check text-success"></span></td>
+                                            <td class="hidden-md-down">IOS XE</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <span class="icon-router-outline icon-size-20 half-margin-right text-light"></span>
+                                                <span>IE-3300_6</span>
+                                            </td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center hidden-xs-down"><span class="icon-check text-success"></span></td>
+                                            <td class="hidden-md-down">IOS XE</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <span class="icon-wlc-outline icon-size-20 half-margin-right text-light"></span>
+                                                <span>WLC-9800</span>
+                                            </td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center hidden-xs-down"><span class="icon-check text-success"></span></td>
+                                            <td class="hidden-md-down">IOS XE</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox">
+                                                    <span class="checkbox__input"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <span class="icon-wlc-outline icon-size-20 half-margin-right text-light"></span>
+                                                <span>SJC06-vWLC-9800</span>
+                                            </td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center hidden-xs-down"></td>
+                                            <td class="hidden-md-down">IOS XE</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <ul class="pagination pull-right">
+                                <li><a class="disabled" href="javascript:;"><span class="icon-chevron-left-double"></span></a></li>
+                                <li><a class="disabled" href="javascript:;"><span class="icon-chevron-left"></span></a></li>
+                                <li class="active"><a href="javascript:;">1</a></li>
+                                <li><a href="javascript:;">2</a></li>
+                                <li><a href="javascript:;">3</a></li>
+                                <li><a href="javascript:;">4</a></li>
+                                <li><span class="icon-more"></span></li>
+                                <li><a href="javascript:;">16</a></li>
+                                <li><a href="javascript:;"><span class="icon-chevron-right"></span></a></li>
+                                <li><a href="javascript:;"><span class="icon-chevron-right-double"></span></a></li>
+                            </ul>
+                        </div>
+                        <!-- CUSTOMIZATION END -->                                                                       
+                                
+                    </div>
+                </div>
+            </div>
+    
+        <!-- Right Rail -->
+        <div class="col-xl-3 col-md-4">
+            <div class="section" >
+                <div class="panel panel--loose panel--raised base-margin-bottom">
+                    <h2 class="subtitle">Step 3: Do something with it<!--CUSTOMIZE: Add headline of second step here--></h2>
+                    
+                    <!--CUSTOMIZE: Change content as needed-->
+                    <form action="/" method="POST" name="envVars"> 
+                        <div class="section"> 
+                            <!--Value1 Field-->
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="value1" type="text" required="" onfocus="showOriginalText('Start Demo')">
+                                    <label for="value1">Value1*</label>
+                                </div>
+                                <div class="help-block" role="alert">
+                                    <span>Hint for field</span>
+                                </div>
+                            </div>
+
+                            <!--Dropdown Select-->
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text select">
+                                    <select id="input-type-select" onfocus="showOriginalText('Start Demo')">
+                                        <option value="first">First Value</option>
+                                        <option value="second" selected="">Second Value</option>
+                                        <option value="third">Third Value</option>
+                                    </select>
+                                    <label for="input-type-select">Basic Select</label>
+                                </div>
+                                <div class="help-block" role="alert">
+                                    <span>Hint for field</span>
+                                </div>
+                            </div>
+                        </div> 
+                        
+                        <!--Alert for error message-->
+                        <!--PASS INFO: Pass the following information to the template: error=True/False ; errormessage="xxx" ; errorcode=xxx-->
+                        {% include "alert.html" %}
+                        
+                        <input id="settings-submit" onclick="showLoadingText()" onload="showOriginalText('Save')" class="btn btn-primary" type="submit" value="Save & Run">
+
+                    </form>
+                    <!-- CUSTOMIZATION END-->
+
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+    {%  endblock %}

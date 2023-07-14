@@ -1,0 +1,64 @@
+<!-- Instructions page: This page includes information about the frontend template -->
+
+{% extends "masterPage.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Rail -->
+    <!-- Menu element-->
+    {% include "menu.html" %}
+
+    <!-- Right Rail -->
+    <div class="col-9 col-xl-10 col-md-9">
+        <div class="section" >
+            <div class="panel panel--loose base-margin-bottom">
+                <div class="col-xl-12">
+                    <h2>SecureX Extract Observables</h2>
+                    <div class="form-group base-margin-bottom">
+                        <form action="/observables" method="POST" name="input_string">
+                            <div class="form-group__text">
+                                <textarea id="textarea-label-default" class="textarea" name="string_input" rows="3">
+                                </textarea>
+                                <label for="textarea-label-default">Input String</label>
+                            </div>
+                            <br>
+                            <input id="login-submit" class="btn btn-primary" type="submit" value="Submit">
+                            <br>
+                        </form>
+                    </div>
+                    <div class="row">
+                        {% for key, value in observables %}
+                            {% for element in value %}
+                                <div class="col-md-6 col-xl-4">
+                                    <div class="panel panel--loose panel--raised base-margin-bottom">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                {% if key in 'url' %}
+                                                    <span class="icon-link icon-size-24"></span>
+                                                {% elif key in 'domain' %}
+                                                    <span class="icon-language icon-size-24"></span>
+                                                {% elif key in 'ip' %}
+                                                    <span class="icon-display icon-size-24"></span>
+                                                {% elif key in 'email' %}
+                                                    <span class="icon-email icon-size-24"></span>
+                                                {% else %}
+                                                    <span class="icon-eye icon-size-24"></span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-11">
+                                                <div class="subheader">{{ key }}</div>
+                                                <p class="p-desc-scroll">
+                                                    {{ element }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%  endblock %}

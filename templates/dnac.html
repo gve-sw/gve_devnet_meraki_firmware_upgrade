@@ -1,0 +1,544 @@
+<!--Charts: Overview of pie chart UI components-->
+
+{% extends "masterPage.html" %}
+
+{% block title %}
+<span>{{region}}</span>
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript">
+    function downloadCSV(csv, filename) {
+        var csvFile;
+        var downloadLink;
+        // CSV file
+        csvFile = new Blob([csv], { type: "text/csv" });
+        // Download link
+        downloadLink = document.createElement("a");
+        // File name
+        downloadLink.download = filename;
+        // Create a link to the file
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        // Hide download link
+        downloadLink.style.display = "none";
+        // Add the link to DOM
+        document.body.appendChild(downloadLink);
+        // Click download link
+        downloadLink.click();
+    }
+
+    function exportTableToCSV(filename) {
+        var csv = [];
+        var rows = document.querySelectorAll("table tr");
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = [], cols = rows[i].querySelectorAll("td, th");
+
+            for (var j = 0; j < cols.length; j++)
+                row.push(cols[j].innerText);
+
+            csv.push(row.join(","));
+        }
+        // Download CSV file
+        downloadCSV(csv.join("\n"), filename);
+    }
+
+
+</script>
+
+<script type="text/javascript">
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+</script>
+    <!-- Sidebar -->
+     <!-- Left Rail -->
+     <div class="container-fluid">
+     {% include "menu.html" %}
+
+    <div id="content" class="col-10">
+        <br>
+        <div id="section" class="container-fluid">
+            <div class="header-panel header-panel--right hidden-md-down">
+                <button class="btn btn--primary" onclick="exportTableToCSV('clientInfo.csv')">Generate Inventory Report</button>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="panel panel--loose panel--raised base-margin-bottom" height="500">
+                        <h2 style="text-align:center" class="subtitle"> Inventory</h2>
+                        <div class ="row">
+                            <div style="display:none" class="col-xl-8" style="overflow-y: scroll; height:220px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col" style="text-align:center">Hostname</th>
+                                        <th scope="col" style="text-align:center">Location</th>
+                                        <th scope="col" style="text-align:center">Status</th>
+                                        <th scope="col" style="text-align:center">Uptime</th>
+                                        <th scope="col" style="text-align:center">Serial</th>
+                                        <th scope="col" style="text-align:center">Model</th>
+                                        <th scope="col" style="text-align:center">OS Version</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">
+                                        {% for device in devices %}
+                                        <tr>
+                                            <td style="text-align:center ">{{device.hostname}}</td>
+                                            <td style="text-align:center">{{device.location}}</td>
+                                            <td style="text-align:center">{{device.status}}</td>
+                                            <td style="text-align:center">{{device.uptime}}</td>
+                                            <td style="text-align:center">{{device.serial}}</td>
+                                            <td style="text-align:center">{{device.type}}</td>
+                                            <td style="text-align:center">{{device.os}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <canvas id="myChart6"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart6').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: ['Reachable','Non-Reachable'],
+                                        datasets: [{
+                                            label: 'status',
+                                            data: [{{reachable_count}},{{unreachable_count}}],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                            ],
+                                            borderWidth: 1,
+                                            fill:false,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Rechability Status',
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                            <div class="col-md-4">
+                                <canvas id="myChart1"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart1').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: ['WLCs', 'Switches/Hubs', 'Routers', 'APs'],
+                                        datasets: [{
+                                            label: 'devices',
+                                            data: [{{counters.wlc}}, {{counters.switches_hubs}}, {{counters.router}}, {{counters.ap}}],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1,
+                                            fill:false,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Inventory Distribution'
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                            <div class="col-md-4" style="overflow-y: scroll; height:200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col" style="text-align:center">Hostname</th>
+                                        <th scope="col" style="text-align:center">Location</th>
+                                        <th scope="col" style="text-align:center">Serial</th>
+                                        <th scope="col" style="text-align:center">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">
+                                        {% for device in all_offline_devices %}
+                                        <tr>
+                                            <td style="text-align:center ">{{device.hostname}}</td>
+                                            <td style="text-align:center">{{device.location}}</td>
+                                            <td style="text-align:center">{{device.serial}}</td>
+                                            <td style="text-align:center">{{device.status}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel--loose panel--raised base-margin-bottom" height="500">
+                        <h2 style="text-align:center" class="subtitle"> Network Health</h2>
+                        <div class ="row">
+                            <div style="display:none" class="col-xl-8">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col" style="text-align:center">Category</th>
+                                        <th scope="col" style="text-align:center">Total Count</th>
+                                        <th scope="col" style="text-align:center">Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">
+                                        {% for report in reports %}
+                                        <tr>
+                                            <td style="text-align:center ">{{report.category}}</td>
+                                            <td style="text-align:center">{{report.totalCount}}</td>
+                                            <td style="text-align:center">{{report.healthScore}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <canvas id="myChart2"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart2').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: ['Access', 'Distribution', 'Router', 'WLC','AP'],
+                                        datasets: [{
+                                            label: 'Health',
+                                            data: [{{scores.access}}, {{scores.distribution}}, {{scores.router}},{{scores.wlc}}, {{scores.ap}}],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1,
+                                            fill:true,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Device Distribution Health',
+                                        },
+                                        scales: {
+                                            yAxes: [{
+                                                ticks: {
+                                                    beginAtZero: true
+                                                }
+                                            }]
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                            <div class="col-md-4">
+                                <canvas id="myChart10"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart10').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: [
+                                            {% for item in site_health_labels %}
+                                                "{{ item }}",
+                                            {% endfor %}
+                                            ],
+                                        datasets: [{
+                                            label: 'Health',
+                                            data: [
+                                                    {% for item in site_health_scores %}
+                                                        "{{ item }}",
+                                                    {% endfor %}
+                                                ],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1,
+                                            fill:true,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Health Per Site',
+                                        },
+                                        scales: {
+                                            yAxes: [{
+                                                ticks: {
+                                                    beginAtZero: true
+                                                }
+                                            }]
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                            <div class="col-md-4">
+                                <canvas id="myChart87"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart87').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: [
+                                            {% for item in application_site_labels %}
+                                                "{{ item }}",
+                                            {% endfor %}
+                                            ],
+                                        datasets: [{
+                                            label: 'Application count',
+                                            data: [
+                                                    {% for item in application_site_count %}
+                                                        "{{ item }}",
+                                                    {% endfor %}
+                                                ],
+                                            backgroundColor: 'rgba(54, 162, 235, 1)',
+                                            borderColor: 'rgba(54, 162, 235, 1)',
+                                            borderWidth: 1,
+                                            fill:true,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Application Count per site',
+                                        },
+                                        scales: {
+                                            yAxes: [{
+                                                ticks: {
+                                                    beginAtZero: true
+                                                }
+                                            }]
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel--loose panel--raised base-margin-bottom" height="500">
+                        <h2 style="text-align:center" class="subtitle">Wireless Assurance</h2>
+                        <div class ="row">
+                            <div class="col-md-4">
+                                <canvas id="myChart4"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart4').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: [
+                                            {% for item in site_health_labels %}
+                                                "{{ item }}",
+                                            {% endfor %}
+                                            ],
+                                        datasets: [{
+                                            label: 'Client Count',
+                                            data: [
+                                                    {% for item in site_client_count %}
+                                                        "{{ item }}",
+                                                    {% endfor %}
+                                                ],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1,
+                                            fill:false,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Wireless Clients per Site',
+                                        },
+                                        scales: {
+                                            yAxes: [{
+                                                ticks: {
+                                                    beginAtZero: true
+                                                }
+                                            }]
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                            <div class="col-md-4">
+                                <canvas id="myChart5"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart5').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: ["Wired Clients", 'Wireless Clients'],
+                                        datasets: [{
+                                            label: 'devices',
+                                            data: [{{client_count.wired}},{{client_count.wireless}}],
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1,
+                                            fill:false,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Client Distribution',
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel--loose panel--raised base-margin-bottom" height="500">
+                        <h2 style="text-align:center" class="subtitle"> Alert Notifications</h2>
+                        <div class = "row">
+                            <div class="col-md-8">
+                                <canvas id="myChart92"></canvas>
+                                <script>
+                                var ctx = document.getElementById('myChart92').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: [
+                                            {% for item in issues_site_labels %}
+                                                "{{ item }}",
+                                            {% endfor %}
+                                            ],
+                                        datasets: [{
+                                            label: 'Application count',
+                                            data: [
+                                                    {% for item in issues_site_count %}
+                                                        "{{ item }}",
+                                                    {% endfor %}
+                                                ],
+                                            backgroundColor: 'rgba(54, 162, 235, 1)',
+                                            borderColor: 'rgba(54, 162, 235, 1)',
+                                            borderWidth: 1,
+                                            fill:true,
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                        display: true,
+                                        text: 'Alerts per site',
+                                        },
+                                        scales: {
+                                            yAxes: [{
+                                                ticks: {
+                                                    beginAtZero: true
+                                                }
+                                            }]
+                                        }
+                                    }
+                                });
+                                </script>
+                            </div>
+                            <div class="col-md-4" style="overflow-y: scroll; height:200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col" style="text-align:center">Alert Name</th>
+                                        <th scope="col" style="text-align:center">Device Mac</th>
+                                        <th scope="col" style="text-align:center">Device Role</th>
+                                        <th scope="col" style="text-align:center">Status</th>
+                                        <th scope="col" style="text-align:center">Last occurence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">
+                                        {% for issue in issues_site_details %}
+                                        <tr>
+                                            <td style="text-align:center ">{{issue.name}}</td>
+                                            <td style="text-align:center">{{issue.mac}}</td>
+                                            <td style="text-align:center">{{issue.deviceRole}}</td>
+                                            <td style="text-align:center">{{issue.status}}</td>
+                                            <td style="text-align:center">{{issue.occurence}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div> 
+{% endblock %}

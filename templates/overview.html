@@ -1,0 +1,84 @@
+<!-- Template page: offers three sections to visualize a 3 steps workflow.-->
+
+{% extends "masterPage.html" %}
+
+{% block content %}
+<div class="row">
+        
+        <!-- Left Rail -->
+        <div class="col-xl-4 col-md-4">
+            
+        </div>
+    
+
+        <!-- Middle Rail -->
+        <div class="col-xl-5 col-md-4">
+            <div class="section" >
+                <div class="panel panel--loose panel--raised base-margin-bottom">
+                    
+                    <div style="text-align: center;margin-top: 20px;margin-bottom: 20px;">
+                        <a href="/index" class="btn btn--primary" style="text-align: center;">Go to scheduling tool</a>
+                    </div>
+
+                    <h2 style="text-align: center;margin-top: 30px;">ESTATE OVERVIEW</h2>
+                    
+
+                    {% for org in orgs %}
+                        <h5 style="margin-top: 50px;color: #4d8433;">Organization: {{org.name}}</h5>
+
+                        <h6 style="font-style:italic;float: right;margin-top: 10px;color: gray;">Networks</h6>
+                        <table id="networks" class="table table--lined table--selectable" aria-label="Selectable rows table example">
+                            <thead>
+                                <tr>
+                                    <th>Network name</th>
+                                    <th>Switch Version</th>
+                                    <th>Wireless Version</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for n in org.networks %}
+                                <tr {% if n.switchbeta or n.wirelessstable %} style="background-color: #FFB7B7;" {% endif %}>
+                                    <td>{{n.name}}</td>
+                                    <td>{{n.switch}}</td>
+                                    <td>{{n.wireless}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <h6 style="font-style:italic;float: right;margin-top: 10px;color: gray;">Templates</h6>
+                        <table id="networks" class="table table--lined table--selectable" aria-label="Selectable rows table example">
+                            <thead>
+                                <tr>
+                                    <th>Template name</th>
+                                    <th>Number of networks</th>
+                                    <th>Switch Version</th>
+                                    <th>Wireless Version</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in org.templates %}
+                                <tr {% if t.switchbeta or t.wirelessstable %} style="background-color: #FFB7B7;" {% endif %}>
+                                    <td>{{t.name}}</td>
+                                    <td>{{t.networks|length}}</td>
+                                    <td>{{t.switch}}</td>
+                                    <td>{{t.wireless}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endfor %}                 
+                    
+                    <div style="text-align: center;margin-top: 50px;margin-bottom: 20px;">
+                        <a href="/index" class="btn btn--primary" style="text-align: center;">Go to scheduling tool</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Right Rail -->
+    <div class="col-xl-3 col-md-4">
+        
+    </div>
+</div>
+{%  endblock %}

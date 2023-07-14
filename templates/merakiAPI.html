@@ -1,0 +1,72 @@
+{% extends "masterPage.html" %}
+
+{% block content %}
+<div class="row">
+        
+        <!-- Left Rail -->
+        <!-- Menu element-->
+        {% include "menu.html" %}
+
+        <!-- Middle Rail -->
+        <div class="col-6 col-xl-6 col-md-6">
+            <div id="meraki_api" class="section" >
+                <div class="panel panel--loose panel--raised base-margin-bottom">
+                    <h2 class="subtitle">Meraki API</h2>
+                    <hr>
+                  
+                    <p>This page provides information and an example on how to use the Meraki Dashboard API. Use the links on the right side for further details. </p>
+                    
+                    {% if orgaStructure %}
+                        Meraki organizations and networks:
+                        {% for orga in orgaStructure %}
+                        <h3>{{orga.name}}</h3>
+                        <ul class="list-group">
+                            {% for network in orga['networks'] %}
+                            <li class="list-group-item">
+                                {{network.name}}
+                            </li>  
+                            {% endfor %}          
+                        </ul>
+                        {% endfor %}
+                    {% else %}
+                            Please add a Meraki API Key in the .env file, rerun the <b>pip install -r requirements.txt</b> command and uncomment the following lines in the app.py file to display the result of some example calls. 
+                        </br>
+                        </br>
+                            <img src="{{ url_for('static', filename='static/images/meraki_api1.png')}}" alt="Lines of code">
+                            <img src="{{ url_for('static', filename='static/images/meraki_api2.png')}}" alt="Lines of code">
+                        </br>
+                        </br>
+                            The example API calls request the organizations and corresponding networks for a given API Key.
+                    {% endif %}
+
+
+                </div>
+            </div>
+        </div>
+
+    <!-- Right Rail -->
+    <div class="col-3 col-xl-3 col-md-3">
+        <div class="section" >
+            <div class="panel panel--loose panel--raised base-margin-bottom">
+                <h2 class="subtitle">Extern Resources</h2>
+                <hr>
+                
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <a href="https://developer.cisco.com/meraki/api-v1/#!introduction" class="btn btn--link">Meraki Dashboard API Documentation</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://developer.cisco.com/meraki/api-v1/#!overview/api-key" class="btn btn--link">How to: Authorization and API Key</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://developer.cisco.com/meraki/api-v1/#!get-device" class="btn btn--link">API Call Documentation</a>
+                    </li>
+
+                    
+                  </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{%  endblock %}
+
